@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Food Ordering - Bistro Delights</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Welcome to Bistro Delights</h2>
+            <p>Preparing your digital menu...</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container" style="display: none;">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>Bistro Delights</span>
+                </div>
+                <div class="header-actions">
+                    <button id="cart-btn" class="cart-button">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </button>
+                    <button id="admin-btn" class="admin-button">
+                        <i class="fas fa-user-shield"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Table Selection Screen -->
+        <div id="table-selection" class="screen active">
+            <div class="container">
+                <div class="welcome-section">
+                    <h1>Welcome to Bistro Delights!</h1>
+                    <p>Please select your table number to get started</p>
+                </div>
+                <div class="table-grid">
+                    <div class="table-card" data-table="1">
+                        <i class="fas fa-chair"></i>
+                        <span>Table 1</span>
+                    </div>
+                    <div class="table-card" data-table="2">
+                        <i class="fas fa-chair"></i>
+                        <span>Table 2</span>
+                    </div>
+                    <div class="table-card" data-table="3">
+                        <i class="fas fa-chair"></i>
+                        <span>Table 3</span>
+                    </div>
+                    <div class="table-card" data-table="4">
+                        <i class="fas fa-chair"></i>
+                        <span>Table 4</span>
+                    </div>
+                    <div class="table-card" data-table="5">
+                        <i class="fas fa-chair"></i>
+                        <span>Table 5</span>
+                    </div>
+                    <div class="table-card" data-table="6">
+                        <i class="fas fa-chair"></i>
+                        <span>Table 6</span>
+                    </div>
+                </div>
+                <div class="qr-info">
+                    <p><i class="fas fa-qrcode"></i> Scanned QR code? Your table will be auto-selected!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Screen -->
+        <div id="menu-screen" class="screen">
+            <div class="container">
+                <div class="menu-header">
+                    <div class="table-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="current-table">Table 1</span>
+                    </div>
+                    <div class="menu-categories">
+                        <button class="category-btn active" data-category="all">All</button>
+                        <button class="category-btn" data-category="starters">Starters</button>
+                        <button class="category-btn" data-category="mains">Mains</button>
+                        <button class="category-btn" data-category="desserts">Desserts</button>
+                        <button class="category-btn" data-category="drinks">Drinks</button>
+                    </div>
+                </div>
+                <div id="menu-items" class="menu-grid">
+                    <!-- Menu items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Status Screen -->
+        <div id="order-status" class="screen">
+            <div class="container">
+                <div class="order-header">
+                    <h2>Order Status</h2>
+                    <div class="order-info">
+                        <span id="order-table"></span>
+                        <span id="order-id"></span>
+                    </div>
+                </div>
+                <div class="status-tracker">
+                    <div class="status-step active" data-status="pending">
+                        <div class="status-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span>Order Placed</span>
+                    </div>
+                    <div class="status-step" data-status="accepted">
+                        <div class="status-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <span>Accepted</span>
+                    </div>
+                    <div class="status-step" data-status="cooking">
+                        <div class="status-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <span>Cooking</span>
+                    </div>
+                    <div class="status-step" data-status="ready">
+                        <div class="status-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <span>Ready</span>
+                    </div>
+                    <div class="status-step" data-status="served">
+                        <div class="status-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <span>Served</span>
+                    </div>
+                </div>
+                <div id="order-items" class="order-summary">
+                    <!-- Order items will be populated -->
+                </div>
+                <div class="order-actions">
+                    <button id="pay-now-btn" class="pay-button" style="display: none;">
+                        <i class="fas fa-credit-card"></i>
+                        Pay Now
+                    </button>
+                    <button id="back-to-menu" class="secondary-button">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login Screen -->
+        <div id="admin-login" class="screen">
+            <div class="container">
+                <div class="login-form">
+                    <h2>Admin Login</h2>
+                    <form id="admin-login-form">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="admin-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="admin-password" required>
+                        </div>
+                        <button type="submit" class="primary-button">Login</button>
+                        <button type="button" id="back-to-main" class="secondary-button">Back</button>
+                    </form>
+                    <div class="demo-credentials">
+                        <p><strong>Demo Credentials:</strong></p>
+                        <p>Username: admin | Password: admin123</p>
+                        <p>Username: chef | Password: chef123</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard Screen -->
+        <div id="admin-dashboard" class="screen">
+            <div class="admin-container">
+                <div class="admin-sidebar">
+                    <div class="admin-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="admin-name">Admin</span>
+                        <small id="admin-role">Administrator</small>
+                    </div>
+                    <nav class="admin-nav">
+                        <button class="nav-btn active" data-section="orders">
+                            <i class="fas fa-list-ul"></i>
+                            Orders
+                        </button>
+                        <button class="nav-btn" data-section="menu" id="menu-nav-btn">
+                            <i class="fas fa-utensils"></i>
+                            Menu Management
+                        </button>
+                        <button class="nav-btn" data-section="analytics" id="analytics-nav-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            Analytics
+                        </button>
+                        <button id="admin-logout" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </nav>
+                </div>
+                <div class="admin-content">
+                    <!-- Orders Section -->
+                    <div id="admin-orders" class="admin-section active">
+                        <h2>Order Management</h2>
+                        <div class="orders-filters">
+                            <button class="filter-btn active" data-filter="all">All Orders</button>
+                            <button class="filter-btn" data-filter="pending">Pending</button>
+                            <button class="filter-btn" data-filter="cooking">Cooking</button>
+                            <button class="filter-btn" data-filter="ready">Ready</button>
+                        </div>
+                        <div id="orders-list" class="orders-container">
+                            <!-- Orders will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Menu Management Section -->
+                    <div id="admin-menu" class="admin-section">
+                        <div class="section-header">
+                            <h2>Menu Management</h2>
+                            <button id="add-menu-item" class="primary-button">
+                                <i class="fas fa-plus"></i>
+                                Add Item
+                            </button>
+                        </div>
+                        <div id="menu-management" class="menu-management">
+                            <!-- Menu management interface will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Analytics Section -->
+                    <div id="admin-analytics" class="admin-section">
+                        <h2>Restaurant Analytics</h2>
+                        <div class="analytics-grid">
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="total-orders">0</h3>
+                                    <p>Total Orders Today</p>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="total-revenue">₹0</h3>
+                                    <p>Revenue Today</p>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="avg-rating">4.5</h3>
+                                    <p>Average Rating</p>
+                                </div>
+                            </div>
+                            <div class="analytics-card">
+                                <div class="analytics-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="analytics-info">
+                                    <h3 id="avg-time">25m</h3>
+                                    <p>Avg. Preparation Time</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="analytics-charts">
+                            <div class="chart-container">
+                                <h3>Daily Sales Overview</h3>
+                                <div id="sales-chart" class="chart-placeholder">
+                                    <p>Sales chart visualization would be implemented here</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Popular Menu Items</h3>
+                                <div id="popular-items" class="popular-items-list">
+                                    <!-- Popular items will be populated -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div id="cart-sidebar" class="cart-sidebar">
+            <div class="cart-header">
+                <h3>Your Order</h3>
+                <button id="close-cart" class="close-cart">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="cart-items" class="cart-items">
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Your cart is empty</p>
+                    <small>Add items from the menu to get started</small>
+                </div>
+            </div>
+            <div class="cart-footer">
+                <div class="cart-total">
+                    <span>Total: ₹<span id="cart-total">0</span></span>
+                </div>
+                <button id="place-order" class="place-order-btn" disabled>
+                    Place Order
+                </button>
+            </div>
+        </div>
+
+        <!-- Cart Overlay -->
+        <div id="cart-overlay" class="cart-overlay"></div>
+
+        <!-- Payment Modal -->
+        <div id="payment-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Payment</h3>
+                    <button class="close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="payment-summary">
+                        <h4>Order Summary</h4>
+                        <div id="payment-items"></div>
+                        <div class="payment-total">
+                            <strong>Total: ₹<span id="payment-total">0</span></strong>
+                        </div>
+                    </div>
+                    <div class="payment-methods">
+                        <h4>Select Payment Method</h4>
+                        <div class="payment-options">
+                            <button class="payment-option" data-method="upi">
+                                <i class="fas fa-mobile-alt"></i>
+                                UPI Payment
+                            </button>
+                            <button class="payment-option" data-method="card">
+                                <i class="fas fa-credit-card"></i>
+                                Card Payment
+                            </button>
+                            <button class="payment-option" data-method="cash">
+                                <i class="fas fa-money-bill"></i>
+                                Pay at Counter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirm-payment" class="primary-button" disabled>
+                        Confirm Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Item Modal -->
+        <div id="menu-item-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-item-name">Menu Item</h3>
+                    <button class="close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="menu-item-form">
+                        <div class="form-group">
+                            <label>Item Name</label>
+                            <input type="text" id="item-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea id="item-description" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="item-price" min="0" step="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="item-category" required>
+                                <option value="">Select Category</option>
+                                <option value="starters">Starters</option>
+                                <option value="mains">Mains</option>
+                                <option value="desserts">Desserts</option>
+                                <option value="drinks">Drinks</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="url" id="item-image" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Preparation Time (minutes)</label>
+                            <input type="number" id="item-prep-time" min="1" value="15" required>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="item-available" checked>
+                                Available
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="save-menu-item" class="primary-button">
+                        Save Item
+                    </button>
+                    <button class="secondary-button close-modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Overlay -->
+        <div id="modal-overlay" class="modal-overlay"></div>
+
+        <!-- Success Toast -->
+        <div id="toast" class="toast">
+            <div class="toast-content">
+                <i class="fas fa-check-circle"></i>
+                <span class="toast-message"></span>
+            </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div id="feedback-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Rate Your Experience</h3>
+                    <button class="close-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="rating-section">
+                        <p>How was your dining experience?</p>
+                        <div class="star-rating">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Comments (Optional)</label>
+                        <textarea id="feedback-comments" rows="3" placeholder="Tell us about your experience..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="submit-feedback" class="primary-button">
+                        Submit Feedback
+                    </button>
+                    <button class="secondary-button close-modal">
+                        Skip
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='mock-data.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

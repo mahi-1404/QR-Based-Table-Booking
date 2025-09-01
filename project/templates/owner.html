@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>Bistro Delights - Owner</span>
+                </div>
+            </div>
+        </header>
+        <div id="admin-dashboard" class="screen active">
+            <div class="admin-container">
+                <div class="admin-content">
+                    <div id="admin-orders" class="admin-section active">
+                        <h2>Order Management</h2>
+                        <div class="orders-filters">
+                            <button class="filter-btn active" data-filter="all">All Orders</button>
+                            <button class="filter-btn" data-filter="pending">Pending</button>
+                            <button class="filter-btn" data-filter="cooking">Cooking</button>
+                            <button class="filter-btn" data-filter="ready">Ready</button>
+                        </div>
+                        <div id="orders-list" class="orders-container">
+                            <!-- Orders will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='owner.js') }}"></script>
+</body>
+</html>
